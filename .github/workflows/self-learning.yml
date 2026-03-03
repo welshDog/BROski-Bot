@@ -1,0 +1,60 @@
+name: Self-Learning Agent Retraining
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight UTC
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Install dependencies
+      run: poetry install
+    
+    - name: Check feedback count
+      id: check
+      run: |
+        COUNT=$(poetry run python scripts/check_feedback_count.py)
+        echo "feedback_count=$COUNT" >> $GITHUB_OUTPUT
+        if [ $COUNT -lt 100 ]; then
+          echo "⏸️ Only $COUNT feedback entries. Need 100+ for retraining."
+          exit 0
+        fi
+    
+    - name: Run agent retraining
+      if: steps.check.outputs.feedback_count >= 100
+      run: |
+        echo "🔥 Training with ${{ steps.check.outputs.feedback_count }} feedback entries!"
+        poetry run python scripts/train_agent.py --epochs 10 --batch-size 32
+    
+    - name: Evaluate model performance
+      if: steps.check.outputs.feedback_count >= 100
+      run: poetry run python scripts/evaluate_model.py
+    
+    - name: Deploy new model
+      if: steps.check.outputs.feedback_count >= 100
+      run: |
+        poetry run python scripts/deploy_model.py
+        echo "✅ New model deployed successfully!"
+    
+    - name: Create training report
+      if: steps.check.outputs.feedback_count >= 100
+      run: |
+        echo "## 🧠 Self-Learning Training Report" >> $GITHUB_STEP_SUMMARY
+        echo "- Feedback entries: ${{ steps.check.outputs.feedback_count }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Training completed: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- Model version: $(cat data/models/version.txt)" >> $GITHUB_STEP_SUMMARY
