@@ -1,0 +1,100 @@
+name: Self-Learning Agent Retraining
+
+on:
+  workflow_dispatch:
+    inputs:
+      epochs:
+        description: 'Number of training epochs'
+        required: false
+        default: '10'
+      batch_size:
+        description: 'Training batch size'
+        required: false
+        default: '32'
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight UTC
+
+jobs:
+  check-feedback:
+    runs-on: ubuntu-latest
+    outputs:
+      should_train: ${{ steps.check.outputs.should_train }}
+      feedback_count: ${{ steps.check.outputs.feedback_count }}
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔍 Check feedback count
+      id: check
+      run: |
+        if [ -f data/training/feedback.json ]; then
+          COUNT=$(jq '. | length' data/training/feedback.json)
+          echo "feedback_count=$COUNT" >> $GITHUB_OUTPUT
+          if [ $COUNT -ge 100 ]; then
+            echo "should_train=true" >> $GITHUB_OUTPUT
+            echo "✅ $COUNT feedback entries found. Retraining recommended!"
+          else
+            echo "should_train=false" >> $GITHUB_OUTPUT
+            echo "⏳ Only $COUNT feedback entries. Need 100+ for retraining."
+          fi
+        else
+          echo "should_train=false" >> $GITHUB_OUTPUT
+          echo "feedback_count=0" >> $GITHUB_OUTPUT
+          echo "📭 No feedback file found."
+        fi
+
+  train:
+    needs: check-feedback
+    if: needs.check-feedback.outputs.should_train == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: 📦 Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: 📥 Install dependencies
+      run: poetry install
+    
+    - name: 🧠 Run training pipeline
+      run: |
+        poetry run python scripts/train_agent.py \
+          --epochs ${{ github.event.inputs.epochs || '10' }} \
+          --batch-size ${{ github.event.inputs.batch_size || '32' }} \
+          --output data/models/broski_model_$(date +%Y%m%d_%H%M%S).pt
+    
+    - name: 📊 Evaluate model performance
+      run: poetry run python scripts/evaluate_model.py
+    
+    - name: 📤 Upload model artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-model-${{ github.run_number }}
+        path: data/models/*.pt
+    
+    - name: 🚀 Deploy model (if evaluation passed)
+      run: |
+        echo "🎉 Model training complete!"
+        echo "📊 Feedback entries used: ${{ needs.check-feedback.outputs.feedback_count }}"
+        # Add deployment logic here (copy to production server, update config, etc.)
+    
+    - name: 📝 Create deployment summary
+      run: |
+        echo "## 🧠 Self-Learning Training Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Feedback Entries**: ${{ needs.check-feedback.outputs.feedback_count }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Epochs**: ${{ github.event.inputs.epochs || '10' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Batch Size**: ${{ github.event.inputs.batch_size || '32' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Training Date**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Model successfully trained and ready for deployment!" >> $GITHUB_STEP_SUMMARY
