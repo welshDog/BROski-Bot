@@ -413,3 +413,4 @@ Traceback (most recent call last):
   File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1189, in _get_app_command_options
     raise CommandNotFound(name, parents)
 discord.app_commands.errors.CommandNotFound: Application command 'weekly' not found
+2026-03-04 20:10:03,897 | INFO | discord.gateway | Shard ID None has successfully RESUMED session fcbcf2ff5fc7473d1a12afcfffe9581d.
