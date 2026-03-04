@@ -1,19 +1,20 @@
-#!/usr/bin/env python3
-"""
-BROski Bot v3.0 - The Legendary Edition
-Neurodivergent-friendly Discord automation empire
-Author: Lyndz Williams (@welshDog)
-"""
-
+""
 import discord
 from discord.ext import commands
-import asyncio
+from discord import app_commands
 import aiosqlite
+import asyncio
 import logging
-from pathlib import Path
-from dotenv import load_dotenv
-import os
 from datetime import datetime
+from dotenv import load_dotenv
+import sys
+import os
+from pathlib import Path  
+
+# Fix Windows console encoding for emojis
+if sys.platform == 'win32':
+    os.system('chcp 65001 >nul')
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Load environment variables
 load_dotenv()
@@ -23,8 +24,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
     handlers=[
-        logging.FileHandler('logs/broski_bot.log'),
-        logging.StreamHandler()
+        logging.StreamHandler(),
+        logging.FileHandler('logs/broski_bot.log', encoding='utf-8')
     ]
 )
 logger = logging.getLogger('BROski')

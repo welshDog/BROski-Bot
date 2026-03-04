@@ -16,3 +16,77 @@ discord.app_commands.errors.CommandNotFound: Application command 'hyperfocus' no
 2026-03-04 01:13:52,725 | WARNING | discord.client | davey is not installed, voice will NOT be supported
 2026-03-04 01:13:52,737 | INFO | discord.client | logging in using static token
 2026-03-04 01:13:53,861 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 09a4a613f6567d1eabde30c93f0fc1ba).
+2026-03-04 01:21:55,175 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 01:21:55,176 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 01:21:55,188 | INFO | discord.client | logging in using static token
+2026-03-04 01:21:56,173 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 5559a5dd3fb421b4a2d6d9ad39f5b3dd).
+2026-03-04 01:45:21,079 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 5559a5dd3fb421b4a2d6d9ad39f5b3dd.
+2026-03-04 02:07:25,381 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:07:25,383 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:07:25,387 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:07:25,392 | INFO | discord.client | logging in using static token
+2026-03-04 02:07:26,494 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: e200da4e796746c1df6a8849f8de97d3).
+2026-03-04 02:07:28,523 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:07:28,524 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:07:28,524 | ERROR | discord.client | Ignoring exception in on_ready
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\client.py", line 508, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\bot.py", line 122, in on_ready
+    Path('database').mkdir(exist_ok=True)
+    ^^^^
+NameError: name 'Path' is not defined
+2026-03-04 02:10:36,973 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:10:36,973 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:10:36,975 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:10:36,977 | INFO | discord.client | logging in using static token
+2026-03-04 02:10:38,021 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 9be9eeafabb6a534c5842b173e0e85f2).
+2026-03-04 02:10:40,055 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:10:40,055 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:10:40,075 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:10:40,093 | ERROR | BROski | ❌ Failed to load cogs.economy: Extension 'cogs.economy' raised an error: ModuleNotFoundError: No module named 'src'
+2026-03-04 02:10:40,106 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:10:40,107 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' could not be loaded or found.
+2026-03-04 02:10:40,110 | ERROR | BROski | ❌ Failed to load cogs.community: Extension 'cogs.community' could not be loaded or found.
+2026-03-04 02:10:40,112 | ERROR | BROski | ❌ Failed to load cogs.ai_relay: Extension 'cogs.ai_relay' could not be loaded or found.
+2026-03-04 02:10:40,360 | INFO | BROski | ✅ Synced 4 slash commands
+2026-03-04 02:13:13,324 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'shop' not found
+2026-03-04 02:13:29,023 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'leaderboard' not found
+2026-03-04 02:14:06,019 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'coach' not found
+2026-03-04 02:14:23,640 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'hyperfocus' not found

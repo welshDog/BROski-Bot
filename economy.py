@@ -1,272 +1,260 @@
-"""
-BROski Economy Cog - Token system, daily streaks, leaderboards
-"""
-
+from typing import Optional
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 import aiosqlite
-import os
 from datetime import datetime, timedelta
-import random
-import json
+import logging
 
-DB_PATH = os.getenv('DB_PATH', 'database/broski_main.db')
-
-# Dopamine hype messages for daily claims
-HYPE_MESSAGES = [
-    "🔥 LEGENDARY daily claim, BROski!",
-    "💎 Crystal vibes incoming!",
-    "🚀 Tokens secured, let's GOOO!",
-    "⚡ Hyperfocus energy activated!",
-    "🐶 Good BROski energy today!",
-    "♾️ Infinite potential unlocked!",
-    "🎯 Another day, another win!",
-    "💪 Building that empire, mate!",
-    "🧠 Neurodivergent excellence!",
-    "🌟 ADHD superpowers engaged!"
-]
+logger = logging.getLogger(__name__)
 
 class Economy(commands.Cog):
-    """Token economy system"""
-
-    def __init__(self, bot):
+    """Economy commands for token management."""
+    
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-
-    async def ensure_user_exists(self, discord_id: str, username: str):
-        """Create user record if doesn't exist"""
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute("""
-                INSERT OR IGNORE INTO users (discord_id, username)
-                VALUES (?, ?)
-            """, (discord_id, username))
-            await db.commit()
-
-    async def get_balance(self, discord_id: str):
-        """Get user token balance"""
-        async with aiosqlite.connect(DB_PATH) as db:
-            async with db.execute("""
-                SELECT broski_tokens, hyper_gems, daily_streak, cosmic_rank, total_xp
-                FROM users WHERE discord_id = ?
-            """, (discord_id,)) as cursor:
+        self.db_path = 'database/broski_main.db'
+    
+    async def get_balance(self, user_id: int) -> int:
+        """Get user's token balance."""
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                'SELECT balance FROM users WHERE user_id = ?', (user_id,)
+            ) as cursor:
                 row = await cursor.fetchone()
-                return row if row else (0, 0, 0, 'Neuro_Friend', 0)
-
-    async def add_tokens(self, discord_id: str, amount: int, reason: str):
-        """Add tokens to user account"""
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute("""
-                UPDATE users SET broski_tokens = broski_tokens + ?
-                WHERE discord_id = ?
-            """, (amount, discord_id))
-
-            await db.execute("""
-                INSERT INTO economy_transactions (discord_id, amount, direction, reason)
-                VALUES (?, ?, 'earn', ?)
-            """, (discord_id, amount, reason))
-
+                return row[0] if row else 0
+    
+    async def add_tokens(self, user_id: int, amount: int) -> int:
+        """Add tokens to user's balance."""
+        async with aiosqlite.connect(self.db_path) as db:
+            # Create user if doesn't exist
+            await db.execute(
+                '''INSERT OR IGNORE INTO users (user_id, balance, daily_streak, last_daily)
+                   VALUES (?, 0, 0, NULL)''',
+                (user_id,)
+            )
+            # Add tokens
+            await db.execute(
+                'UPDATE users SET balance = balance + ? WHERE user_id = ?',
+                (amount, user_id)
+            )
             await db.commit()
-
-    @commands.hybrid_command(name="balance", description="Check your BROski$ balance")
-    @app_commands.describe(user="User to check (optional)")
-    async def balance(self, ctx, user: discord.Member = None):
-        """Check token balance"""
-        target = user or ctx.author
-        await self.ensure_user_exists(str(target.id), target.name)
-
-        tokens, gems, streak, rank, xp = await self.get_balance(str(target.id))
-
-        embed = discord.Embed(
-            title=f"💰 {target.display_name}'s Wallet",
-            color=0xf1c40f
-        )
-        embed.set_thumbnail(url=target.display_avatar.url)
-        embed.add_field(name="🪙 BROski Tokens", value=f"**{tokens:,}** BROski$", inline=True)
-        embed.add_field(name="💎 HyperGems", value=f"**{gems}**", inline=True)
-        embed.add_field(name="🔥 Streak", value=f"**{streak}** days", inline=True)
-        embed.add_field(name="🌟 Cosmic Rank", value=f"**{rank}**", inline=True)
-        embed.add_field(name="⚡ Total XP", value=f"**{xp:,}**", inline=True)
-        embed.set_footer(text="Keep grinding, BROski! 🐶♾️")
-
-        await ctx.send(embed=embed)
-
-    @commands.hybrid_command(name="daily", description="Claim your daily reward (streak bonus!)")
-    async def daily(self, ctx):
-        """Claim daily reward with streak system"""
-        discord_id = str(ctx.author.id)
-        await self.ensure_user_exists(discord_id, ctx.author.name)
-
-        async with aiosqlite.connect(DB_PATH) as db:
-            # Check last claim
-            async with db.execute("""
-                SELECT last_checkin, daily_streak FROM users WHERE discord_id = ?
-            """, (discord_id,)) as cursor:
-                row = await cursor.fetchone()
-                last_checkin, current_streak = row if row else (None, 0)
-
-            now = datetime.utcnow().date()
-
-            # Check if already claimed today
-            if last_checkin:
-                last_date = datetime.fromisoformat(last_checkin).date()
-                if last_date == now:
-                    next_claim = datetime.combine(now + timedelta(days=1), datetime.min.time())
-                    hours_left = int((next_claim - datetime.utcnow()).total_seconds() / 3600)
-
-                    embed = discord.Embed(
-                        title="⏰ Already Claimed Today!",
-                        description=f"Come back in **{hours_left}h** for your next daily, BROski!",
-                        color=0xe74c3c
-                    )
-                    return await ctx.send(embed=embed)
-
-                # Check streak
-                days_diff = (now - last_date).days
-                if days_diff == 1:
-                    current_streak += 1
-                elif days_diff > 1:
-                    current_streak = 1
-            else:
-                current_streak = 1
-
-            # Calculate reward
-            base_reward = 50
-            streak_bonus = min(current_streak * 10, 200)
-            total_reward = base_reward + streak_bonus
-
-            # Update database
-            await db.execute("""
-                UPDATE users 
-                SET broski_tokens = broski_tokens + ?,
-                    last_checkin = ?,
-                    daily_streak = ?
-                WHERE discord_id = ?
-            """, (total_reward, now.isoformat(), current_streak, discord_id))
-
-            await db.execute("""
-                INSERT INTO economy_transactions (discord_id, amount, direction, reason)
-                VALUES (?, ?, 'earn', ?)
-            """, (discord_id, total_reward, f"Daily claim (streak: {current_streak})"))
-
-            await db.commit()
-
-        # Success embed
-        embed = discord.Embed(
-            title="🎉 Daily Reward Claimed!",
-            description=random.choice(HYPE_MESSAGES),
-            color=0x2ecc71
-        )
-        embed.add_field(name="💰 Earned", value=f"**+{total_reward} BROski$**", inline=True)
-        embed.add_field(name="🔥 Streak", value=f"**{current_streak} days**", inline=True)
-
-        if current_streak >= 7:
-            embed.add_field(name="🏆 Bonus", value="**Weekly Legend!** +50 extra", inline=False)
-            await self.add_tokens(discord_id, 50, "7-day streak bonus")
-
-        embed.set_footer(text="Keep the streak alive! Come back tomorrow 🐶")
-
-        await ctx.send(embed=embed)
-
-    @commands.hybrid_command(name="give", description="Gift tokens to another member")
-    @app_commands.describe(user="User to gift to", amount="Amount of tokens")
-    async def give(self, ctx, user: discord.Member, amount: int):
-        """Transfer tokens between users"""
-        if user.bot:
-            return await ctx.send("❌ Can't gift tokens to bots, BROski!")
-
-        if user.id == ctx.author.id:
-            return await ctx.send("❌ Can't gift yourself, mate! 😅")
-
+            return await self.get_balance(user_id)
+    
+    @app_commands.command(name="balance", description="Check your BROski$ token balance")
+    async def balance(
+        self,
+        interaction: discord.Interaction,
+        user: Optional[discord.Member] = None,
+    ) -> None:
+        """Check token balance."""
+        target_user = user or interaction.user
+        
+        try:
+            balance = await self.get_balance(target_user.id)
+            
+            embed = discord.Embed(
+                title="💰 BROski$ Balance",
+                description=f"{target_user.mention} has **{balance:,}** BROski$ tokens",
+                color=discord.Color.gold(),
+            )
+            embed.set_thumbnail(url=target_user.display_avatar.url)
+            
+            await interaction.response.send_message(embed=embed)
+            logger.info(f"Balance checked for {target_user.name}: {balance}")
+        
+        except Exception as e:
+            logger.error(f"Balance command failed: {e}")
+            await interaction.response.send_message(
+                "❌ Failed to check balance. Please try again.",
+                ephemeral=True,
+            )
+    
+    @app_commands.command(name="daily", description="Claim your daily BROski$ reward")
+    async def daily(self, interaction: discord.Interaction) -> None:
+        """Claim daily reward with streak bonuses."""
+        try:
+            async with aiosqlite.connect(self.db_path) as db:
+                # Get current streak info
+                async with db.execute(
+                    'SELECT daily_streak, last_daily FROM users WHERE user_id = ?',
+                    (interaction.user.id,)
+                ) as cursor:
+                    row = await cursor.fetchone()
+                
+                now = datetime.utcnow()
+                base_reward = 50
+                streak = 0
+                
+                if row and row[1]:
+                    last_daily = datetime.fromisoformat(row[1])
+                    hours_since = (now - last_daily).total_seconds() / 3600
+                    
+                    if hours_since < 24:
+                        # Already claimed today
+                        hours_left = 24 - hours_since
+                        embed = discord.Embed(
+                            title="⏰ Daily Reward Already Claimed",
+                            description=f"Come back in **{hours_left:.1f}** hours!",
+                            color=discord.Color.orange(),
+                        )
+                        await interaction.response.send_message(embed=embed, ephemeral=True)
+                        return
+                    
+                    # Check streak
+                    if hours_since < 48:
+                        streak = row[0] + 1
+                    else:
+                        streak = 1
+                else:
+                    streak = 1
+                
+                # Calculate reward with streak bonus
+                streak_bonus = min(streak * 10, 100)
+                total_reward = base_reward + streak_bonus
+                
+                # Update database
+                await db.execute(
+                    '''INSERT OR REPLACE INTO users (user_id, balance, daily_streak, last_daily)
+                       VALUES (?, COALESCE((SELECT balance FROM users WHERE user_id = ?), 0) + ?, ?, ?)''',
+                    (interaction.user.id, interaction.user.id, total_reward, streak, now.isoformat())
+                )
+                await db.commit()
+            
+            # Create embed
+            embed = discord.Embed(
+                title="🎁 Daily Reward Claimed!",
+                color=discord.Color.green(),
+            )
+            embed.add_field(name="💰 Base Reward", value=f"{base_reward} BROski$", inline=True)
+            embed.add_field(name="🔥 Streak Bonus", value=f"+{streak_bonus} BROski$", inline=True)
+            embed.add_field(name="📊 Total", value=f"**{total_reward} BROski$**", inline=True)
+            embed.add_field(name="🔥 Streak", value=f"{streak} days", inline=False)
+            embed.set_footer(text="Come back tomorrow to continue your streak!")
+            
+            await interaction.response.send_message(embed=embed)
+            logger.info(f"Daily claimed by {interaction.user.name}: {total_reward} tokens, {streak} day streak")
+        
+        except Exception as e:
+            logger.error(f"Daily command failed: {e}")
+            await interaction.response.send_message(
+                "❌ Failed to claim daily reward. Please try again.",
+                ephemeral=True,
+            )
+    
+    @app_commands.command(name="give", description="Gift BROski$ tokens to another user")
+    async def give(
+        self,
+        interaction: discord.Interaction,
+        user: discord.Member,
+        amount: int,
+    ) -> None:
+        """Transfer tokens to another user."""
         if amount <= 0:
-            return await ctx.send("❌ Amount must be positive!")
+            await interaction.response.send_message("❌ Amount must be positive!", ephemeral=True)
+            return
+        
+        if user.id == interaction.user.id:
+            await interaction.response.send_message("❌ You can't give tokens to yourself!", ephemeral=True)
+            return
+        
+        try:
+            sender_balance = await self.get_balance(interaction.user.id)
+            
+            if sender_balance < amount:
+                embed = discord.Embed(
+                    title="❌ Insufficient Balance",
+                    description=f"You need **{amount:,}** BROski$ but only have **{sender_balance:,}**",
+                    color=discord.Color.red(),
+                )
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+                return
+            
+            async with aiosqlite.connect(self.db_path) as db:
+                # Remove from sender
+                await db.execute(
+                    'UPDATE users SET balance = balance - ? WHERE user_id = ?',
+                    (amount, interaction.user.id)
+                )
+                # Add to recipient
+                await db.execute(
+                    '''INSERT INTO users (user_id, balance) VALUES (?, ?)
+                       ON CONFLICT(user_id) DO UPDATE SET balance = balance + ?''',
+                    (user.id, amount, amount)
+                )
+                await db.commit()
+            
+            new_sender_balance = await self.get_balance(interaction.user.id)
+            new_recipient_balance = await self.get_balance(user.id)
+            
+            embed = discord.Embed(
+                title="💸 Tokens Transferred",
+                description=f"{interaction.user.mention} gave **{amount:,}** BROski$ to {user.mention}",
+                color=discord.Color.blue(),
+            )
+            embed.add_field(name=f"{interaction.user.name}'s Balance", value=f"**{new_sender_balance:,}**", inline=True)
+            embed.add_field(name=f"{user.name}'s Balance", value=f"**{new_recipient_balance:,}**", inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+            logger.info(f"{interaction.user.name} gave {amount} tokens to {user.name}")
+        
+        except Exception as e:
+            logger.error(f"Give command failed: {e}")
+            await interaction.response.send_message(
+                "❌ Failed to transfer tokens. Please try again.",
+                ephemeral=True,
+            )
+    
+    @app_commands.command(name="leaderboard", description="View top BROski$ earners")
+    async def leaderboard(self, interaction: discord.Interaction) -> None:
+        """Display token leaderboard."""
+        try:
+            async with aiosqlite.connect(self.db_path) as db:
+                async with db.execute(
+                    'SELECT user_id, balance FROM users ORDER BY balance DESC LIMIT 10'
+                ) as cursor:
+                    top_users = await cursor.fetchall()
+            
+            if not top_users:
+                await interaction.response.send_message(
+                    "No leaderboard data available yet!",
+                    ephemeral=True,
+                )
+                return
+            
+            embed = discord.Embed(
+                title="🏆 BROski$ Leaderboard",
+                description="Top 10 token earners",
+                color=discord.Color.gold(),
+            )
+            
+            medals = ["🥇", "🥈", "🥉"] + ["▫️"] * 7
+            
+            for idx, (user_id, balance) in enumerate(top_users):
+                try:
+                    user = await self.bot.fetch_user(user_id)
+                    embed.add_field(
+                        name=f"{medals[idx]} #{idx + 1} {user.name}",
+                        value=f"**{balance:,}** BROski$",
+                        inline=False,
+                    )
+                except:
+                    embed.add_field(
+                        name=f"{medals[idx]} #{idx + 1} Unknown User",
+                        value=f"**{balance:,}** BROski$",
+                        inline=False,
+                    )
+            
+            await interaction.response.send_message(embed=embed)
+            logger.info("Leaderboard displayed")
+        
+        except Exception as e:
+            logger.error(f"Leaderboard command failed: {e}")
+            await interaction.response.send_message(
+                "❌ Failed to load leaderboard. Please try again.",
+                ephemeral=True,
+            )
 
-        sender_id = str(ctx.author.id)
-        receiver_id = str(user.id)
-
-        await self.ensure_user_exists(sender_id, ctx.author.name)
-        await self.ensure_user_exists(receiver_id, user.name)
-
-        # Check sender has enough
-        sender_balance = (await self.get_balance(sender_id))[0]
-        if sender_balance < amount:
-            return await ctx.send(f"❌ Not enough tokens! You have {sender_balance} BROski$")
-
-        # Transfer
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute("UPDATE users SET broski_tokens = broski_tokens - ? WHERE discord_id = ?", 
-                           (amount, sender_id))
-            await db.execute("UPDATE users SET broski_tokens = broski_tokens + ? WHERE discord_id = ?", 
-                           (amount, receiver_id))
-
-            await db.execute("""
-                INSERT INTO economy_transactions (discord_id, amount, direction, reason)
-                VALUES (?, ?, 'spend', ?)
-            """, (sender_id, amount, f"Gift to {user.name}"))
-
-            await db.execute("""
-                INSERT INTO economy_transactions (discord_id, amount, direction, reason)
-                VALUES (?, ?, 'earn', ?)
-            """, (receiver_id, amount, f"Gift from {ctx.author.name}"))
-
-            await db.commit()
-
-        embed = discord.Embed(
-            title="🎁 Tokens Gifted!",
-            description=f"**{ctx.author.display_name}** → **{user.display_name}**",
-            color=0x9b59b6
-        )
-        embed.add_field(name="Amount", value=f"**{amount:,} BROski$**")
-        embed.set_footer(text="Generosity is legendary! 🐶♾️")
-
-        await ctx.send(embed=embed)
-
-    @commands.hybrid_command(name="leaderboard", description="View top BROski earners")
-    @app_commands.describe(category="What to rank by")
-    @app_commands.choices(category=[
-        app_commands.Choice(name="Tokens", value="tokens"),
-        app_commands.Choice(name="XP", value="xp"),
-        app_commands.Choice(name="Streak", value="streak"),
-        app_commands.Choice(name="Focus Time", value="focus")
-    ])
-    async def leaderboard(self, ctx, category: str = "tokens"):
-        """Show leaderboards"""
-        field_map = {
-            "tokens": ("broski_tokens", "💰 Token"),
-            "xp": ("total_xp", "⚡ XP"),
-            "streak": ("daily_streak", "🔥 Streak"),
-            "focus": ("total_focus_min", "⏱️ Focus")
-        }
-
-        db_field, display_name = field_map.get(category, ("broski_tokens", "💰 Token"))
-
-        async with aiosqlite.connect(DB_PATH) as db:
-            async with db.execute(f"""
-                SELECT username, {db_field} FROM users
-                WHERE is_active = TRUE
-                ORDER BY {db_field} DESC
-                LIMIT 10
-            """) as cursor:
-                rows = await cursor.fetchall()
-
-        if not rows:
-            return await ctx.send("❌ No data yet! Start earning, BROski!")
-
-        embed = discord.Embed(
-            title=f"🏆 {display_name} Leaderboard - Top 10",
-            color=0xf39c12
-        )
-
-        medals = ["🥇", "🥈", "🥉"] + ["🏅"] * 7
-
-        leaderboard_text = ""
-        for i, (username, value) in enumerate(rows):
-            medal = medals[i]
-            leaderboard_text += f"{medal} **{username}** - {value:,}\n"
-
-        embed.description = leaderboard_text
-        embed.set_footer(text="Keep grinding to reach the top! 🐶♾️")
-
-        await ctx.send(embed=embed)
-
-async def setup(bot):
+async def setup(bot: commands.Bot) -> None:
+    """Add economy cog to bot."""
     await bot.add_cog(Economy(bot))
