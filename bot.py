@@ -126,11 +126,14 @@ async def on_ready():
 
     # Load all cogs
     cogs_to_load = [
-        'cogs.economy',
-        'cogs.focus_engine',
-        'cogs.quest_system',
-        'cogs.community',
-        'cogs.ai_relay'
+        "cogs.economy",
+        "cogs.focus_engine",
+        "cogs.quest_system",
+        "cogs.ai_relay",
+        "cogs.community",
+        "cogs.shop_system",
+        "cogs.mystery_box",
+        "cogs.profile_system",
     ]
 
     for cog in cogs_to_load:
@@ -139,6 +142,7 @@ async def on_ready():
             logger.info(f"✅ Loaded cog: {cog}")
         except Exception as e:
             logger.error(f"❌ Failed to load {cog}: {e}")
+
 
     # Sync slash commands
     try:
