@@ -90,3 +90,170 @@ Traceback (most recent call last):
   File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
     raise CommandNotFound(name, parents)
 discord.app_commands.errors.CommandNotFound: Application command 'hyperfocus' not found
+2026-03-04 02:25:46,956 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:25:46,957 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:25:46,959 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:25:46,963 | INFO | discord.client | logging in using static token
+2026-03-04 02:25:47,964 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 3948e630727db68c7da1b6b3c957f97c).
+2026-03-04 02:25:50,031 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:25:50,032 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:25:50,043 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:25:50,044 | ERROR | BROski | ❌ Failed to load cogs.economy: Extension 'cogs.economy' could not be loaded or found.
+2026-03-04 02:25:50,049 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:25:50,050 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' could not be loaded or found.
+2026-03-04 02:25:50,051 | ERROR | BROski | ❌ Failed to load cogs.community: Extension 'cogs.community' could not be loaded or found.
+2026-03-04 02:25:50,051 | ERROR | BROski | ❌ Failed to load cogs.ai_relay: Extension 'cogs.ai_relay' could not be loaded or found.
+2026-03-04 02:25:50,352 | INFO | BROski | ✅ Synced 4 slash commands
+2026-03-04 02:36:58,206 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:36:58,207 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:36:58,209 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:36:58,213 | INFO | discord.client | logging in using static token
+2026-03-04 02:36:59,382 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 773d60d8bdcd6c9cc93e8b5b13f76878).
+2026-03-04 02:37:01,406 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:37:01,407 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:37:01,428 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:37:01,431 | ERROR | BROski | ❌ Failed to load cogs.economy: Extension 'cogs.economy' could not be loaded or found.
+2026-03-04 02:37:01,436 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:37:01,438 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' could not be loaded or found.
+2026-03-04 02:37:01,471 | INFO | cogs.community | Community system initialized
+2026-03-04 02:37:01,476 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:37:01,492 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:37:02,160 | INFO | BROski | ✅ Synced 10 slash commands
+2026-03-04 02:41:59,873 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:41:59,875 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:41:59,878 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:41:59,884 | INFO | discord.client | logging in using static token
+2026-03-04 02:42:01,023 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: e7f30e783d4652766111fba05ffdbae0).
+2026-03-04 02:42:03,045 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:42:03,045 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:42:03,067 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:42:03,082 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 02:42:03,088 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:42:03,134 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 02:42:03,144 | INFO | cogs.community | Community system initialized
+2026-03-04 02:42:03,145 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:42:03,149 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:42:03,432 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 02:45:35,211 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:45:35,212 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:45:35,213 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:45:35,217 | INFO | discord.client | logging in using static token
+2026-03-04 02:45:36,212 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: bb871bf05649f47c2aac23296afc1b3d).
+2026-03-04 02:45:38,248 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:45:38,249 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:45:38,265 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:45:38,271 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 02:45:38,277 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:45:38,301 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 02:45:38,310 | INFO | cogs.community | Community system initialized
+2026-03-04 02:45:38,312 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:45:38,317 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:45:39,033 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 02:47:18,517 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:47:18,518 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:47:18,520 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:47:18,524 | INFO | discord.client | logging in using static token
+2026-03-04 02:47:19,422 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: c2035e48103d63b3535e32c014aa1a43).
+2026-03-04 02:47:21,452 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:47:21,453 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:47:21,466 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:47:21,470 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 02:47:21,473 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:47:21,516 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 02:47:21,522 | INFO | cogs.community | Community system initialized
+2026-03-04 02:47:21,523 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:47:21,525 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:47:21,743 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 02:49:15,676 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:49:15,677 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:49:15,679 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:49:15,684 | INFO | discord.client | logging in using static token
+2026-03-04 02:49:16,631 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 0940c4630b008e6644aee7413a8cac7e).
+2026-03-04 02:49:18,659 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:49:18,660 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:49:18,677 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:49:18,682 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 02:49:18,685 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:49:18,696 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 02:49:18,702 | INFO | cogs.community | Community system initialized
+2026-03-04 02:49:18,704 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:49:18,709 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:49:18,972 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 02:52:31,808 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 02:52:31,808 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 02:52:31,810 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 02:52:31,812 | INFO | discord.client | logging in using static token
+2026-03-04 02:52:34,481 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 08b64714b5dc29ee89e08d3cfad2029b).
+2026-03-04 02:52:36,510 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 02:52:36,511 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 02:52:36,547 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 02:52:36,552 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 02:52:36,557 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 02:52:36,594 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 02:52:36,616 | INFO | cogs.community | Community system initialized
+2026-03-04 02:52:36,617 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 02:52:36,621 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 02:52:36,892 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 02:54:53,730 | ERROR | cogs.economy | Balance command failed: no such column: balance
+2026-03-04 02:56:16,283 | ERROR | cogs.economy | Daily command failed: no such column: last_daily
+2026-03-04 02:56:26,028 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1189, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'weekly' not found
+2026-03-04 02:58:58,677 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1189, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'start' not found
+2026-03-04 02:59:15,667 | INFO | cogs.ai_relay | Anxiety check used by w8lshd0g
+2026-03-04 02:59:58,534 | ERROR | cogs.economy | Leaderboard command failed: no such column: user_id
+2026-03-04 03:00:27,450 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'shop' not found
+2026-03-04 04:56:48,264 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 08b64714b5dc29ee89e08d3cfad2029b.
+2026-03-04 05:29:15,834 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 08b64714b5dc29ee89e08d3cfad2029b.
+2026-03-04 08:30:14,106 | ERROR | cogs.economy | Balance command failed: no such column: balance
+2026-03-04 08:31:13,001 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'shop' not found
+2026-03-04 08:38:40,337 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 08:38:40,339 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 08:38:40,342 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 08:38:40,346 | INFO | discord.client | logging in using static token
+2026-03-04 08:38:41,425 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 54e94ec23bcdb01ee4135e48d73fc86c).
+2026-03-04 08:38:43,464 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 08:38:43,466 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 08:38:43,496 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 08:38:43,506 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 08:38:43,513 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 08:38:43,539 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named title
+2026-03-04 08:38:43,549 | INFO | cogs.community | Community system initialized
+2026-03-04 08:38:43,553 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 08:38:43,558 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 08:38:43,798 | INFO | BROski | ✅ Synced 14 slash commands
+2026-03-04 11:08:14,282 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 54e94ec23bcdb01ee4135e48d73fc86c.
