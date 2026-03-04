@@ -257,3 +257,4 @@ discord.app_commands.errors.CommandNotFound: Application command 'shop' not foun
 2026-03-04 08:38:43,558 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
 2026-03-04 08:38:43,798 | INFO | BROski | ✅ Synced 14 slash commands
 2026-03-04 11:08:14,282 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 54e94ec23bcdb01ee4135e48d73fc86c.
+2026-03-04 11:36:16,643 | INFO | discord.gateway | Shard ID None has successfully RESUMED session 54e94ec23bcdb01ee4135e48d73fc86c.
