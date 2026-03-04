@@ -1,4 +1,5 @@
-"""Database connection management with async SQLAlchemy.
+"""
+Database connection management with async SQLAlchemy.
 Provides connection pooling, session management, and migrations.
 """
 from contextlib import asynccontextmanager

@@ -1,0 +1,18 @@
+2026-03-04 01:04:51,833 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 01:04:51,834 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 01:04:51,879 | INFO | discord.client | logging in using static token
+2026-03-04 01:04:52,939 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 7a79f4b94e99def8157ee289e55bf328).
+2026-03-04 01:05:54,428 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1174, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'hyperfocus' not found
+2026-03-04 01:13:52,724 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 01:13:52,725 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 01:13:52,737 | INFO | discord.client | logging in using static token
+2026-03-04 01:13:53,861 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 09a4a613f6567d1eabde30c93f0fc1ba).
