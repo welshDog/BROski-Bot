@@ -385,3 +385,31 @@ discord.app_commands.errors.CommandInvokeError: Command 'badges' raised an excep
 2026-03-04 17:31:58,115 | INFO | BROski | ✅ Loaded cog: cogs.profile_system
 2026-03-04 17:31:58,588 | INFO | BROski | ✅ Synced 22 slash commands
 2026-03-04 17:33:44,378 | ERROR | cogs.economy | Balance command failed: no such column: user_id
+2026-03-04 19:12:31,590 | WARNING | discord.client | PyNaCl is not installed, voice will NOT be supported
+2026-03-04 19:12:31,592 | WARNING | discord.client | davey is not installed, voice will NOT be supported
+2026-03-04 19:12:31,594 | INFO | BROski | 🚀 Starting BROski Bot...
+2026-03-04 19:12:31,598 | INFO | discord.client | logging in using static token
+2026-03-04 19:12:32,970 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: fcbcf2ff5fc7473d1a12afcfffe9581d).
+2026-03-04 19:12:35,006 | INFO | BROski | 🐶♾️ BROski Bot ONLINE | BROski (ID: 1381965656974561300)
+2026-03-04 19:12:35,007 | INFO | BROski | 📊 Connected to 1 servers
+2026-03-04 19:12:35,029 | INFO | BROski | ✅ Database initialized successfully
+2026-03-04 19:12:35,039 | INFO | BROski | ✅ Loaded cog: cogs.economy
+2026-03-04 19:12:35,044 | INFO | BROski | ✅ Loaded cog: cogs.focus_engine
+2026-03-04 19:12:35,057 | ERROR | BROski | ❌ Failed to load cogs.quest_system: Extension 'cogs.quest_system' raised an error: OperationalError: table quests has no column named description
+2026-03-04 19:12:35,061 | INFO | BROski | ✅ Loaded cog: cogs.ai_relay
+2026-03-04 19:12:35,065 | INFO | cogs.community | Community system initialized
+2026-03-04 19:12:35,067 | INFO | BROski | ✅ Loaded cog: cogs.community
+2026-03-04 19:12:35,070 | INFO | BROski | ✅ Loaded cog: cogs.shop_system
+2026-03-04 19:12:35,073 | INFO | BROski | ✅ Loaded cog: cogs.mystery_box
+2026-03-04 19:12:35,082 | INFO | BROski | ✅ Loaded cog: cogs.profile_system
+2026-03-04 19:12:35,466 | INFO | BROski | ✅ Synced 22 slash commands
+2026-03-04 19:13:07,535 | ERROR | discord.app_commands.tree | Ignoring exception in command tree
+Traceback (most recent call last):
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1138, in wrapper
+    await self._call(interaction)
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1270, in _call
+    command, options = self._get_app_command_options(data)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lyndz\Downloads\BROski Bot\BROski-Bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1189, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'weekly' not found
