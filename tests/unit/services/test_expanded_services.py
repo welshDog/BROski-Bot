@@ -15,12 +15,6 @@ async def test_quest_service_timed_quest():
     service = QuestService(session)
     service.orchestrator = AsyncMock(spec=AgentOrchestrator)
     
-    # Mock repositories
-    user_quest_repo = AsyncMock()
-    service.user_quest_repo = user_quest_repo
-    user_repo = AsyncMock()
-    service.user_repo = user_repo
-    
     # Setup timed quest that started 2 hours ago with 1 hour limit
     quest = Quest(type=QuestType.TIMED, time_limit_minutes=60, requirement_count=1)
     user_quest = UserQuest(
@@ -30,20 +24,26 @@ async def test_quest_service_timed_quest():
         quest=quest
     )
     
-    # Mock get_user_quest
-    user_quest_repo.get_user_quest.return_value = user_quest
-    
-    # Mock transaction context using patch
-    with patch("src.services.quest.db") as mock_db:
+    # Mock transaction context and repositories
+    with patch("src.services.quest.db") as mock_db, \
+         patch("src.services.quest.UserQuestRepository") as MockUserQuestRepo, \
+         patch("src.services.quest.UserRepository") as MockUserRepo, \
+         patch("src.services.quest.QuestRepository") as MockQuestRepo:
+        
         tx_context = AsyncMock()
         mock_db.transaction.return_value = tx_context
         tx_context.__aenter__.return_value = session
+        
+        # Mock Repo Instances
+        mock_user_quest_repo = AsyncMock()
+        MockUserQuestRepo.return_value = mock_user_quest_repo
+        mock_user_quest_repo.get_user_quest.return_value = user_quest
         
         # Call complete_quest
         result = await service.complete_quest(1, 1)
         
         # Verify it expired instead of completing
-        user_quest_repo.update_status.assert_called_with(1, QuestStatus.EXPIRED)
+        mock_user_quest_repo.update_status.assert_called_with(1, QuestStatus.EXPIRED)
         assert result == user_quest
 
 @pytest.mark.asyncio
@@ -53,17 +53,6 @@ async def test_quest_service_tiered_quest():
     session = AsyncMock()
     service = QuestService(session)
     service.orchestrator = AsyncMock(spec=AgentOrchestrator)
-    
-    # Mock repositories
-    user_quest_repo = AsyncMock()
-    service.user_quest_repo = user_quest_repo
-    user_repo = AsyncMock()
-    service.user_repo = user_repo
-    
-    # We need to mock quest_repo as well, but it's instantiated inside the method in the transaction block
-    # However, for this test, we can mock the QuestService's logic flow.
-    # The method instantiates: `quest_repo = QuestRepository(session)`
-    # We can patch QuestRepository class.
     
     # Setup tiered quest
     quest = Quest(type=QuestType.TIERED, next_quest_id=2, requirement_count=1)
@@ -76,30 +65,37 @@ async def test_quest_service_tiered_quest():
     
     next_quest = Quest(id=2, title="Next Quest")
     
-    # Mock returns
-    user_quest_repo.get_user_quest.return_value = user_quest
-    
-    # Mock DB Transaction
+    # Mock DB Transaction and Repos
     with patch("src.services.quest.db") as mock_db, \
+         patch("src.services.quest.UserQuestRepository") as MockUserQuestRepo, \
+         patch("src.services.quest.UserRepository") as MockUserRepo, \
          patch("src.services.quest.QuestRepository") as MockQuestRepo:
         
         tx_context = AsyncMock()
         mock_db.transaction.return_value = tx_context
         tx_context.__aenter__.return_value = session
         
-        # Mock QuestRepo instance
-        mock_quest_repo_instance = AsyncMock()
-        MockQuestRepo.return_value = mock_quest_repo_instance
-        mock_quest_repo_instance.get.return_value = next_quest
+        # Mock Repo Instances
+        mock_user_quest_repo = AsyncMock()
+        MockUserQuestRepo.return_value = mock_user_quest_repo
+        mock_user_quest_repo.get_user_quest.return_value = user_quest
+        
+        mock_quest_repo = AsyncMock()
+        MockQuestRepo.return_value = mock_quest_repo
+        mock_quest_repo.get.return_value = next_quest
+        
+        mock_user_repo = AsyncMock()
+        MockUserRepo.return_value = mock_user_repo
+        mock_user_repo.get_by_id.return_value = MagicMock(id=1) # Returns user profile
         
         # Call complete_quest
         result = await service.complete_quest(1, 1)
         
         # Verify status update
-        user_quest_repo.update_status.assert_called_with(1, QuestStatus.COMPLETED)
+        mock_user_quest_repo.update_status.assert_called_with(1, QuestStatus.COMPLETED)
         
         # Verify next quest assignment
-        service.user_quest_repo.create_user_quest.assert_called_with(1, 2)
+        mock_user_quest_repo.create_user_quest.assert_called_with(1, 2)
 
 @pytest.mark.asyncio
 async def test_achievement_streak_trigger():
