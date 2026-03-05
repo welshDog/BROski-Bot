@@ -11,7 +11,7 @@ from sqlalchemy.orm import selectinload
 
 from src.core.database import Base
 from src.core.exceptions import DuplicateRecordException, RecordNotFoundException
-from src.models import Economy, FocusSession, Quest, QuestStatus, User, UserQuest
+from src.models import Economy, FocusSession, Quest, QuestStatus, User, UserQuest, Transaction
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -174,6 +174,42 @@ class UserRepository(BaseRepository[User]):
             .values(last_seen=datetime.utcnow())
         )
         await self.session.execute(stmt)
+
+
+class TransactionRepository(BaseRepository[Transaction]):
+    """Repository for transaction ledger."""
+    
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(Transaction, session)
+        
+    async def get_by_reference(self, user_id: int, category: str, reference_id: str) -> Optional[Transaction]:
+        """Check for existing transaction (idempotency)."""
+        stmt = select(Transaction).where(
+            Transaction.user_id == user_id,
+            Transaction.category == category,
+            Transaction.reference_id == reference_id
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def create_transaction(
+        self,
+        user_id: int,
+        amount: int,
+        type: str,
+        category: str,
+        description: str,
+        reference_id: Optional[str] = None
+    ) -> Transaction:
+        """Create a new transaction record."""
+        return await self.create(
+            user_id=user_id,
+            amount=amount,
+            type=type,
+            category=category,
+            description=description,
+            reference_id=reference_id
+        )
 
 
 class EconomyRepository(BaseRepository[Economy]):

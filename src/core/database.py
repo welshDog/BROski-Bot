@@ -4,7 +4,7 @@ Provides connection pooling, session management, and migrations.
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Optional
 
-from sqlalchemy import event, pool
+from sqlalchemy import event, text, pool
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -46,16 +46,27 @@ class Database:
         Initialize database engine and session factory.
         Creates connection pool and sets up event listeners.
         """
+        # Validate required settings
+        required_settings = [
+            "db_host", "db_port", "db_name", "db_user", "db_password"
+        ]
+        missing = [s for s in required_settings if not getattr(settings, s, None) or getattr(settings, s) == "placeholder"]
+        if missing:
+            raise RuntimeError(f"Missing required database settings: {', '.join(missing)}")
+
         logger.info(
             "Initializing database connection",
-            url=str(settings.database_url).split("@")[-1],  # Hide credentials
+            host=settings.db_host,
+            port=settings.db_port,
+            database=settings.db_name,
+            user=settings.db_user,
         )
         
         # Create async engine with connection pooling
         self._engine = create_async_engine(
-            str(settings.database_url),
+            settings.database_url,
             **settings.get_database_config(),
-            poolclass=pool.QueuePool,
+            echo=settings.database_echo,
         )
         
         # Set up connection pool event listeners
@@ -108,18 +119,39 @@ class Database:
         session = self._session_factory()
         try:
             yield session
-            await session.commit()
         except Exception as e:
             await session.rollback()
             logger.error(
-                "Database transaction failed",
+                "Database session failed",
                 error=str(e),
                 exc_info=True,
             )
             raise
         finally:
             await session.close()
-    
+
+    @asynccontextmanager
+    async def transaction(self) -> AsyncGenerator[AsyncSession, None]:
+        """
+        Context manager for database transactions.
+        Automatically commits on exit or rolls back on exception.
+        
+        Yields:
+            AsyncSession: Database session
+        """
+        if not self._session_factory:
+            raise RuntimeError("Database not initialized. Call init() first.")
+        
+        session = self._session_factory()
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
     async def create_tables(self) -> None:
         """
         Create all database tables.
@@ -155,7 +187,7 @@ class Database:
         """
         try:
             async with self.session() as session:
-                await session.execute("SELECT 1")
+                await session.execute(text("SELECT 1"))
             return True
         except Exception as e:
             logger.error("Database health check failed", error=str(e))
@@ -182,3 +214,15 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     async with db.session() as session:
         yield session
+
+
+async def get_session() -> AsyncSession:
+    """
+    Get a new database session.
+    
+    Returns:
+        AsyncSession: Database session
+    """
+    if not db._session_factory:
+        await db.init()
+    return db._session_factory()

@@ -1,6 +1,6 @@
-# 🐶♾️ BROski Bot v3.0 - The Legendary Edition
+# 🐶♾️ BROski Bot v4.0 - Enterprise Edition
 
-**Neurodivergent-friendly Discord automation empire** built with Python & discord.py
+**Neurodivergent-friendly Discord automation empire** built with Python, discord.py, and Enterprise Architecture.
 
 ---
 
@@ -16,26 +16,62 @@
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## 🚀 Quick Start (Enterprise)
 
 ### 1. Clone & Setup
 ```bash
 git clone https://github.com/welshDog/BROski-Bot.git
 cd BROski-Bot
-python3.11 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+# Install Poetry if not installed: pip install poetry
+poetry install
 ```
 
 ### 2. Configuration
 ```bash
 cp .env.example .env
-# Edit .env with your Discord bot token
+# Edit .env with your Discord bot token and database details:
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_NAME=broski
+# DB_USER=postgres
+# DB_PASSWORD=your_password
 ```
 
-### 3. Run
+### 3. Database Migrations
+The project uses Alembic for database schema management.
 ```bash
-python bot.py
+# Apply migrations to head
+poetry run alembic upgrade head
+
+# Rollback one revision
+poetry run alembic downgrade -1
+
+# Generate new migration (after model changes)
+poetry run alembic revision --autogenerate -m "description"
+```
+
+### 4. Run
+```bash
+poetry run broski run
+# OR
+python -m src.main run
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── agents/         # AI Agents (Classifier, Code Analyzer)
+├── cogs/           # Discord Extensions (Economy, Focus, etc.)
+├── config/         # Settings & Logging
+├── core/           # Core Logic (Database, Exceptions)
+├── integrations/   # External APIs (MintMe)
+├── models/         # Database Models
+├── repositories/   # Data Access Layer
+├── services/       # Business Logic Layer
+└── utils/          # Utilities
 ```
 
 ---
@@ -46,13 +82,13 @@ python bot.py
 - `/balance [@user]` - Check token balance
 - `/daily` - Claim daily reward (streak bonus!)
 - `/give @user amount` - Gift tokens
-- `/leaderboard [tokens|xp|streak]` - Top 10 rankings
+- `/leaderboard` - Top earners
 
 ### ⏱️ Focus & Productivity
 - `/focus project` - Start hyperfocus session (+50 tokens)
 - `/focusend` - End session (+200 tokens base reward!)
 
-### 🎯 Quests (Coming Soon)
+### 🎯 Quests
 - `/quests` - View active quests
 - `/achievements` - Your unlocked achievements
 
@@ -70,23 +106,10 @@ docker-compose logs -f broski-bot
 ## 🛠️ Tech Stack
 
 - **Runtime:** Python 3.11+
-- **Bot Framework:** discord.py 2.x (hybrid commands)
-- **Database:** SQLite3 (aiosqlite)
-- **AI:** llmcord + Ollama (local) / OpenAI
-- **Deployment:** Docker + systemd
+- **Bot Framework:** discord.py 2.x
+- **Database:** PostgreSQL (SQLAlchemy + AsyncPG)
+- **Dependency Management:** Poetry
 - **Monitoring:** Prometheus + Grafana
-
----
-
-## 📊 Architecture
-
-```
-Discord → Bot Core → Cog Modules → Database
-                  ↓
-              AI Relay → Agent Army
-                  ↓
-            MintMe API → Blockchain
-```
 
 ---
 
@@ -105,7 +128,7 @@ This bot is specifically designed with ADHD and dyslexia in mind:
 ## 👨‍💻 Author
 
 **Lyndz Williams** (@welshDog)  
-Welsh Indie Developer | Llanelli, Wales 🏴󠁧󠁢󠁷󠁬󠁳󠁿  
+Welsh Indie Developer | Llanelli, Wales 🏴  
 Building accessible AI tools for neurodivergent creators
 
 ---
