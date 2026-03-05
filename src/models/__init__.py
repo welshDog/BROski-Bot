@@ -151,7 +151,7 @@ class Transaction(Base):
     
     __tablename__ = "transactions"
     
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -233,8 +233,9 @@ class Quest(Base):
     type: Mapped[QuestType] = mapped_column(
         SQLEnum(QuestType),
         default=QuestType.STANDARD,
+        server_default=QuestType.STANDARD.value,
     )
-    time_limit_minutes: Mapped[Optional[int]] = mapped_column(Integer) # For timed quests
+    time_limit_minutes: Mapped[Optional[int]] = mapped_column(Integer, nullable=True) # For timed quests
     next_quest_id: Mapped[Optional[int]] = mapped_column(
         BigInteger,
         ForeignKey("quests.id"),

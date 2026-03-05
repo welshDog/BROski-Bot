@@ -104,77 +104,84 @@ class EconomyService(LoggerMixin):
     
     async def claim_daily_reward(self, user_id: int, username: str, discriminator: str) -> Tuple[int, int, bool]:
         """Claim daily reward with streak bonuses."""
-        async with self.db.transaction() as session:
-            # Re-initialize repos with the transaction session
-            user_repo = UserRepository(session)
-            economy_repo = EconomyRepository(session)
-            transaction_repo = TransactionRepository(session)
-            
-            # Ensure user exists
-            await user_repo.get_or_create(user_id, username, discriminator)
-            
-            # Get economy data
-            economy = await economy_repo.get_or_create(
-                user_id,
-                settings.economy_starting_balance,
-            )
-            
-            # Check if already claimed today
-            now = datetime.utcnow()
-            if economy.last_daily_claim:
-                time_since_claim = now - economy.last_daily_claim
-                if time_since_claim < timedelta(days=1):
-                    hours_remaining = 24 - (time_since_claim.seconds / 3600)
-                    raise DailyLimitExceededException("daily_reward", 1)
-            
-            # Calculate streak
-            is_new_streak = False
-            if economy.last_daily_claim:
-                days_since_claim = (now - economy.last_daily_claim).days
-                if days_since_claim == 1:
-                    economy.daily_streak += 1
-                elif days_since_claim > 1:
-                    economy.daily_streak = 1
-                    is_new_streak = True
-            else:
+        if self.db and hasattr(self.db, '_session_factory') and self.db._session_factory:
+             async with self.db.transaction() as session:
+                return await self._claim_daily_reward_logic(session, user_id, username, discriminator)
+        else:
+            return await self._claim_daily_reward_logic(self.session, user_id, username, discriminator)
+
+    async def _claim_daily_reward_logic(self, session: AsyncSession, user_id: int, username: str, discriminator: str) -> Tuple[int, int, bool]:
+        """Internal logic for daily reward."""
+        # Re-initialize repos with the transaction session
+        user_repo = UserRepository(session)
+        economy_repo = EconomyRepository(session)
+        transaction_repo = TransactionRepository(session)
+        
+        # Ensure user exists
+        await user_repo.get_or_create(user_id, username, discriminator)
+        
+        # Get economy data
+        economy = await economy_repo.get_or_create(
+            user_id,
+            settings.economy_starting_balance,
+        )
+        
+        # Check if already claimed today
+        now = datetime.utcnow()
+        if economy.last_daily_claim:
+            time_since_claim = now - economy.last_daily_claim
+            if time_since_claim < timedelta(days=1):
+                hours_remaining = 24 - (time_since_claim.seconds / 3600)
+                raise DailyLimitExceededException("daily_reward", 1)
+        
+        # Calculate streak
+        is_new_streak = False
+        if economy.last_daily_claim:
+            days_since_claim = (now - economy.last_daily_claim).days
+            if days_since_claim == 1:
+                economy.daily_streak += 1
+            elif days_since_claim > 1:
                 economy.daily_streak = 1
                 is_new_streak = True
-            
-            # Cap streak
-            if economy.daily_streak > settings.economy_max_streak_days:
-                economy.daily_streak = settings.economy_max_streak_days
-            
-            # Calculate reward
-            base_reward = settings.economy_daily_reward
-            streak_bonus = economy.daily_streak * settings.economy_daily_streak_bonus
-            total_reward = base_reward + streak_bonus
-            
-            # Update economy state
-            economy.last_daily_claim = now
-            if economy.daily_streak > economy.max_daily_streak:
-                economy.max_daily_streak = economy.daily_streak
-            
-            # Process Transaction (Credit)
-            await transaction_repo.create_transaction(
-                user_id=user_id,
-                amount=total_reward,
-                type="credit",
-                category="daily_reward",
-                description=f"Daily reward (Streak: {economy.daily_streak})",
-                reference_id=f"daily_{user_id}_{now.date()}"
-            )
-            
-            # Update Balance via Repo
-            await economy_repo.add_balance(user_id, total_reward)
-            
-            self.logger.info(
-                "Daily reward claimed",
-                user_id=user_id,
-                reward=total_reward,
-                streak=economy.daily_streak,
-            )
-            
-            return total_reward, economy.daily_streak, is_new_streak
+        else:
+            economy.daily_streak = 1
+            is_new_streak = True
+        
+        # Cap streak
+        if economy.daily_streak > settings.economy_max_streak_days:
+            economy.daily_streak = settings.economy_max_streak_days
+        
+        # Calculate reward
+        base_reward = settings.economy_daily_reward
+        streak_bonus = economy.daily_streak * settings.economy_daily_streak_bonus
+        total_reward = base_reward + streak_bonus
+        
+        # Update economy state
+        economy.last_daily_claim = now
+        if economy.daily_streak > economy.max_daily_streak:
+            economy.max_daily_streak = economy.daily_streak
+        
+        # Process Transaction (Credit)
+        await transaction_repo.create_transaction(
+            user_id=user_id,
+            amount=total_reward,
+            type="credit",
+            category="daily_reward",
+            description=f"Daily reward (Streak: {economy.daily_streak})",
+            reference_id=f"daily_{user_id}_{now.date()}"
+        )
+        
+        # Update Balance via Repo
+        await economy_repo.add_balance(user_id, total_reward)
+        
+        self.logger.info(
+            "Daily reward claimed",
+            user_id=user_id,
+            reward=total_reward,
+            streak=economy.daily_streak,
+        )
+        
+        return total_reward, economy.daily_streak, is_new_streak
     
     async def transfer_tokens(
         self,
@@ -189,40 +196,52 @@ class EconomyService(LoggerMixin):
         if from_user_id == to_user_id:
             raise InvalidAmountException(amount, "Cannot transfer to yourself")
         
-        async with self.db.transaction() as session:
-            economy_repo = EconomyRepository(session)
-            transaction_repo = TransactionRepository(session)
-            
-            # Deduct from sender
-            sender_economy = await economy_repo.subtract_balance(from_user_id, amount)
-            await transaction_repo.create_transaction(
-                user_id=from_user_id,
-                amount=amount,
-                type="debit",
-                category="transfer_out",
-                description=f"Transfer to {to_user_id}",
-                reference_id=f"transfer_out_{from_user_id}_{datetime.utcnow().timestamp()}"
-            )
-            
-            # Add to recipient
-            recipient_economy = await economy_repo.add_balance(to_user_id, amount)
-            await transaction_repo.create_transaction(
-                user_id=to_user_id,
-                amount=amount,
-                type="credit",
-                category="transfer_in",
-                description=f"Transfer from {from_user_id}",
-                reference_id=f"transfer_in_{to_user_id}_{datetime.utcnow().timestamp()}"
-            )
-            
-            self.logger.info(
-                "Tokens transferred",
-                from_user_id=from_user_id,
-                to_user_id=to_user_id,
-                amount=amount,
-            )
-            
-            return sender_economy.balance, recipient_economy.balance
+        if self.db and hasattr(self.db, '_session_factory') and self.db._session_factory:
+            async with self.db.transaction() as session:
+                return await self._transfer_tokens_logic(session, from_user_id, to_user_id, amount)
+        else:
+            return await self._transfer_tokens_logic(self.session, from_user_id, to_user_id, amount)
+
+    async def _transfer_tokens_logic(
+        self,
+        session: AsyncSession,
+        from_user_id: int,
+        to_user_id: int,
+        amount: int,
+    ) -> Tuple[int, int]:
+        economy_repo = EconomyRepository(session)
+        transaction_repo = TransactionRepository(session)
+        
+        # Deduct from sender
+        sender_economy = await economy_repo.subtract_balance(from_user_id, amount)
+        await transaction_repo.create_transaction(
+            user_id=from_user_id,
+            amount=amount,
+            type="debit",
+            category="transfer_out",
+            description=f"Transfer to {to_user_id}",
+            reference_id=f"transfer_out_{from_user_id}_{datetime.utcnow().timestamp()}"
+        )
+        
+        # Add to recipient
+        recipient_economy = await economy_repo.add_balance(to_user_id, amount)
+        await transaction_repo.create_transaction(
+            user_id=to_user_id,
+            amount=amount,
+            type="credit",
+            category="transfer_in",
+            description=f"Transfer from {from_user_id}",
+            reference_id=f"transfer_in_{to_user_id}_{datetime.utcnow().timestamp()}"
+        )
+        
+        self.logger.info(
+            "Tokens transferred",
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
+            amount=amount,
+        )
+        
+        return sender_economy.balance, recipient_economy.balance
 
     async def get_profile(self, user_id: int) -> EconomyProfile:
         """Get full economy profile for user."""
@@ -256,80 +275,92 @@ class FocusService(LoggerMixin):
         project_name: str,
     ) -> FocusSessionProfile:
         """Start new focus session."""
-        async with self.db.transaction() as session:
-            user_repo = UserRepository(session)
-            focus_repo = FocusSessionRepository(session)
-            
-            # Ensure user exists
-            await user_repo.get_or_create(user_id, username, discriminator)
-            
-            # Check for active session
-            active_session = await focus_repo.get_active_session(user_id)
-            if active_session:
-                raise SessionActiveException("focus")
-            
-            # Create session
-            session_model = await focus_repo.create_session(user_id, project_name)
-            
-            self.logger.info(
-                "Focus session started",
-                user_id=user_id,
-                project_name=project_name,
-            )
-            
-            return FocusSessionProfile.model_validate(session_model)
+        if self.db and hasattr(self.db, '_session_factory') and self.db._session_factory:
+             async with self.db.transaction() as session:
+                return await self._start_session_logic(session, user_id, username, discriminator, project_name)
+        else:
+            return await self._start_session_logic(self.session, user_id, username, discriminator, project_name)
+
+    async def _start_session_logic(self, session: AsyncSession, user_id: int, username: str, discriminator: str, project_name: str) -> FocusSessionProfile:
+        user_repo = UserRepository(session)
+        focus_repo = FocusSessionRepository(session)
+        
+        # Ensure user exists
+        await user_repo.get_or_create(user_id, username, discriminator)
+        
+        # Check for active session
+        active_session = await focus_repo.get_active_session(user_id)
+        if active_session:
+            raise SessionActiveException("focus")
+        
+        # Create session
+        session_model = await focus_repo.create_session(user_id, project_name)
+        
+        self.logger.info(
+            "Focus session started",
+            user_id=user_id,
+            project_name=project_name,
+        )
+        
+        return FocusSessionProfile.model_validate(session_model)
     
     async def end_session(self, user_id: int) -> Tuple[FocusSessionProfile, int]:
         """End active focus session and calculate rewards."""
-        async with self.db.transaction() as session:
-            focus_repo = FocusSessionRepository(session)
-            economy_repo = EconomyRepository(session)
-            transaction_repo = TransactionRepository(session)
-            
-            # Get active session
-            session_model = await focus_repo.get_active_session(user_id)
-            if not session_model:
-                raise SessionNotFoundException("focus")
-            
-            # Calculate duration
-            duration_minutes = int((datetime.utcnow() - session_model.start_time).total_seconds() / 60)
-            
-            # Check for hyperfocus
-            is_hyperfocus = duration_minutes >= settings.focus_hyperfocus_threshold
-            
-            # Calculate rewards
-            base_reward = settings.focus_base_reward
-            if is_hyperfocus:
-                total_reward = int(base_reward * settings.focus_hyperfocus_multiplier)
-                session_model.is_hyperfocus = True
-            else:
-                total_reward = base_reward
-            
-            # End session
-            session_model = await focus_repo.end_session(session_model.id, total_reward)
-            
-            # Log Transaction
-            await transaction_repo.create_transaction(
-                user_id=user_id,
-                amount=total_reward,
-                type="credit",
-                category="focus_session",
-                description=f"Focus Session: {session_model.project_name} ({duration_minutes}m)",
-                reference_id=f"focus_{session_model.id}"
-            )
-            
-            # Add tokens to balance
-            await economy_repo.add_balance(user_id, total_reward)
-            
-            self.logger.info(
-                "Focus session ended",
-                user_id=user_id,
-                duration_minutes=duration_minutes,
-                tokens_earned=total_reward,
-                is_hyperfocus=is_hyperfocus,
-            )
-            
-            return FocusSessionProfile.model_validate(session_model), total_reward
+        if self.db and hasattr(self.db, '_session_factory') and self.db._session_factory:
+             async with self.db.transaction() as session:
+                return await self._end_session_logic(session, user_id)
+        else:
+            return await self._end_session_logic(self.session, user_id)
+
+    async def _end_session_logic(self, session: AsyncSession, user_id: int) -> Tuple[FocusSessionProfile, int]:
+        focus_repo = FocusSessionRepository(session)
+        economy_repo = EconomyRepository(session)
+        transaction_repo = TransactionRepository(session)
+        
+        # Get active session
+        session_model = await focus_repo.get_active_session(user_id)
+        if not session_model:
+            raise SessionNotFoundException("focus")
+        
+        # Calculate duration
+        duration_minutes = int((datetime.utcnow() - session_model.start_time).total_seconds() / 60)
+        
+        # Check for hyperfocus
+        is_hyperfocus = duration_minutes >= settings.focus_hyperfocus_threshold
+        
+        # Calculate rewards
+        base_reward = settings.focus_base_reward
+        if is_hyperfocus:
+            total_reward = int(base_reward * settings.focus_hyperfocus_multiplier)
+            session_model.is_hyperfocus = True
+        else:
+            total_reward = base_reward
+        
+        # End session
+        session_model = await focus_repo.end_session(session_model.id, total_reward)
+        
+        # Log Transaction
+        await transaction_repo.create_transaction(
+            user_id=user_id,
+            amount=total_reward,
+            type="credit",
+            category="focus_session",
+            description=f"Focus Session: {session_model.project_name} ({duration_minutes}m)",
+            reference_id=f"focus_{session_model.id}"
+        )
+        
+        # Add tokens to balance
+        await economy_repo.add_balance(user_id, total_reward)
+        
+        self.logger.info(
+            "Focus session ended",
+            user_id=user_id,
+            duration_minutes=duration_minutes,
+            tokens_earned=total_reward,
+            is_hyperfocus=is_hyperfocus,
+        )
+        
+        return FocusSessionProfile.model_validate(session_model), total_reward
     
     async def get_active_session(self, user_id: int) -> Optional[FocusSessionProfile]:
         """Get user's active session profile."""

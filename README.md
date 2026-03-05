@@ -13,6 +13,7 @@
 - 🏆 **Leveling System** - XP, ranks, auto role assignment
 - 💎 **Memory Crystals** - Epic rewards (500+ tokens)
 - 🔗 **MintMe Integration** - Real blockchain BROski token airdrops
+- 🌐 **REST API** - Secure endpoints for economy and gamification (FastAPI)
 
 ---
 
@@ -52,9 +53,11 @@ poetry run alembic revision --autogenerate -m "description"
 
 ### 4. Run
 ```bash
-poetry run broski run
-# OR
+# Run Bot
 python -m src.main run
+
+# Run API Server (HyperCode Integration)
+python -m src.main api
 ```
 
 ---
@@ -63,6 +66,7 @@ python -m src.main run
 
 ```
 src/
+├── api/            # FastAPI Routes (Economy, Health)
 ├── agents/         # AI Agents (Classifier, Code Analyzer)
 ├── cogs/           # Discord Extensions (Economy, Focus, etc.)
 ├── config/         # Settings & Logging
@@ -94,6 +98,19 @@ src/
 
 ---
 
+## 🔌 API & Integration
+
+BROski Bot exposes a REST API for integration with **HyperCode V2.0**.
+
+- **Base URL:** `http://localhost:8000`
+- **Docs:** `/docs` (Swagger UI)
+- **Endpoints:**
+  - `GET /economy/balance/{user_id}`
+  - `POST /economy/redeem`
+  - `POST /economy/transfer`
+
+---
+
 ## 🐳 Docker Deployment
 
 ```bash
@@ -107,6 +124,7 @@ docker-compose logs -f broski-bot
 
 - **Runtime:** Python 3.11+
 - **Bot Framework:** discord.py 2.x
+- **API Framework:** FastAPI
 - **Database:** PostgreSQL (SQLAlchemy + AsyncPG)
 - **Dependency Management:** Poetry
 - **Monitoring:** Prometheus + Grafana
