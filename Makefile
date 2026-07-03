@@ -1,70 +1,69 @@
 # BROski-Bot Makefile
 # Quick commands for common tasks
 
-.PHONY: help install test lint format clean run docker-build docker-up docker-down deploy
+.PHONY: help install test lint format clean docker-build docker-up docker-down deploy
 
 help:
-	@echo "🐶♾️ BROski-Bot Commands"
-	@echo "====================="
-	@echo ""
-	@echo "make install       - Install dependencies"
-	@echo "make test          - Run tests with coverage"
-	@echo "make lint          - Run linting (Ruff)"
-	@echo "make format        - Format code (Black)"
-	@echo "make clean         - Remove build artifacts"
-	@echo "make run           - Run the bot"
-	@echo "make docker-build  - Build Docker image"
-	@echo "make docker-up     - Start Docker containers"
-	@echo "make docker-down   - Stop Docker containers"
-	@echo "make deploy        - Deploy to production"
-	@echo ""
+	@echo "🐶♾️ BROski-Bot Makefile Commands"
+	@echo "=============================="
+	@echo "install       - Install dependencies with Poetry"
+	@echo "test          - Run test suite with coverage"
+	@echo "lint          - Run linting (Ruff + Black check)"
+	@echo "format        - Auto-format code (Black + Ruff fix)"
+	@echo "clean         - Remove build artifacts and cache"
+	@echo "docker-build  - Build Docker image"
+	@echo "docker-up     - Start bot with Docker Compose"
+	@echo "docker-down   - Stop Docker containers"
+	@echo "deploy        - Deploy to production"
+	@echo "train         - Run self-learning training pipeline"
 
 install:
 	@echo "📦 Installing dependencies..."
-	poetry install --with dev
-	@echo "✅ Done!"
+	poetry install
+	@echo "✅ Dependencies installed!"
 
 test:
 	@echo "🧪 Running tests..."
 	poetry run pytest tests/ -v --cov=src --cov-report=term --cov-report=html
-	@echo "✅ Tests complete! Coverage: htmlcov/index.html"
+	@echo "✅ Tests complete!"
 
 lint:
-	@echo "🔍 Running Ruff linter..."
-	poetry run ruff check .
+	@echo "🔍 Linting code..."
+	poetry run ruff check src/ tests/
+	poetry run black --check src/ tests/
 	@echo "✅ Linting complete!"
 
 format:
-	@echo "🎨 Formatting code with Black..."
-	poetry run black .
-	@echo "✅ Formatting complete!"
+	@echo "✨ Formatting code..."
+	poetry run black src/ tests/
+	poetry run ruff check --fix src/ tests/
+	@echo "✅ Code formatted!"
 
 clean:
 	@echo "🧹 Cleaning build artifacts..."
-	rm -rf __pycache__ .pytest_cache .coverage htmlcov/ dist/ build/ *.egg-info
+	rm -rf __pycache__ .pytest_cache .coverage htmlcov dist build *.egg-info
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	@echo "✅ Clean complete!"
-
-run:
-	@echo "🚀 Starting BROski-Bot..."
-	poetry run python bot.py
+	@echo "✅ Cleaned!"
 
 docker-build:
 	@echo "🐳 Building Docker image..."
-	docker build -t broski-bot:latest .
-	@echo "✅ Build complete!"
+	docker-compose build
+	@echo "✅ Docker image built!"
 
 docker-up:
-	@echo "🚀 Starting Docker containers..."
+	@echo "▶️ Starting BROski-Bot..."
 	docker-compose up -d
-	docker-compose logs -f
+	@echo "✅ Bot is running! View logs: docker-compose logs -f"
 
 docker-down:
-	@echo "🛑 Stopping Docker containers..."
+	@echo "🛑 Stopping containers..."
 	docker-compose down
 	@echo "✅ Containers stopped!"
 
 deploy:
 	@echo "🚀 Deploying to production..."
-	bash scripts/deploy.sh
-	@echo "✅ Deployment complete!"
+	./scripts/deploy.sh
+
+train:
+	@echo "🧠 Running training pipeline..."
+	poetry run python scripts/train_agent.py

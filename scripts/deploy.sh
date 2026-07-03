@@ -3,37 +3,49 @@
 
 set -e
 
-echo "🚀 BROski-Bot Production Deployment"
-echo "===================================="
+echo "🚀 BROski-Bot Deployment Script"
+echo "=============================="
 echo ""
+
+# Check if on main branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" != "main" ]; then
+    echo "⚠️ Warning: Not on main branch (currently on $BRANCH)"
+    read -p "Continue anyway? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
 
 # Pull latest changes
 echo "📥 Pulling latest changes..."
 git pull origin main
 
-# Backup database
-echo "💾 Backing up database..."
-cp broski.db broski.db.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+# Build Docker image
+echo "🐳 Building Docker image..."
+docker-compose -f docker-compose.prod.yml build
 
-# Rebuild Docker containers
-echo "🐳 Rebuilding Docker containers..."
+# Stop old container
+echo "🛑 Stopping old container..."
 docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml build --no-cache
+
+# Start new container
+echo "▶️ Starting new container..."
 docker-compose -f docker-compose.prod.yml up -d
 
-# Wait for startup
-echo "⏳ Waiting for bot to start..."
+# Health check
+echo "🩺 Health check..."
 sleep 5
+if docker ps | grep broski-bot; then
+    echo "✅ Deployment successful!"
+    echo "🔥 BROski-Bot is now running"
+else
+    echo "❌ Deployment failed - container not running"
+    docker-compose -f docker-compose.prod.yml logs --tail=50
+    exit 1
+fi
 
-# Check status
-echo "🔍 Checking container status..."
-docker-compose -f docker-compose.prod.yml ps
-
-# Show logs
 echo ""
-echo "📜 Recent logs:"
-docker-compose -f docker-compose.prod.yml logs --tail=20
-
-echo ""
-echo "✅ Deployment complete!"
-echo "💰 BROski$ earned: 200 tokens for successful deployment!"
+echo "View logs: docker-compose -f docker-compose.prod.yml logs -f"
+echo "BROski$ earned: 200 tokens for deployment! 💰"
