@@ -23,37 +23,40 @@ else
 fi
 
 # Create virtual environment and install dependencies
+echo ""
 echo "📥 Installing dependencies..."
 poetry install
 
 # Setup environment file
 if [ ! -f .env ]; then
+    echo ""
     echo "⚙️ Creating .env file..."
-    cp .env.example .env
+    cp env.example .env
     echo "✏️ IMPORTANT: Edit .env and add your DISCORD_TOKEN"
 else
     echo "✅ .env file already exists"
 fi
 
 # Initialize database
+echo ""
 echo "🗄️ Initializing database..."
-mkdir -p data
-poetry run python -c "from src.utils.database import init_db; init_db()" 2>/dev/null || echo "⚠️ Database init will run on first bot start"
+mkdir -p data/training data/models
+poetry run python -c "import sqlite3; conn = sqlite3.connect('broski.db'); conn.execute('CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 0, xp INTEGER DEFAULT 0, level INTEGER DEFAULT 1)'); conn.commit(); print('✅ Database initialized')"
 
 # Install pre-commit hooks
-if [ -f .pre-commit-config.yaml ]; then
-    echo "🪝 Installing pre-commit hooks..."
-    poetry run pre-commit install
-    echo "✅ Pre-commit hooks installed"
-fi
+echo ""
+echo "🪧 Installing pre-commit hooks..."
+poetry run pre-commit install || echo "⚠️ Pre-commit hooks skipped (install manually later)"
 
 echo ""
+echo "============================="
 echo "✅ Setup complete!"
+echo "============================="
 echo ""
 echo "Next steps:"
 echo "  1. Edit .env and add your Discord bot token"
-echo "  2. Run: poetry run python src/bot.py"
+echo "  2. Run: poetry run python bot.py"
 echo "  3. Or use Docker: docker-compose up"
 echo ""
-echo "BROski$ earned: 100 tokens for setup! 💰"
-echo "🔥 HYPERFOCUS MODE READY 🔥"
+echo "💰 BROski$ earned: 100 tokens for setup! 💰"
+echo ""

@@ -1,36 +1,35 @@
-## 🎯 What Does This PR Do?
-Describe the changes in 1-2 sentences.
+## 🎯 Description
 
-## 🔗 Related Issues
-Fixes #(issue number)
+<!-- Brief description of what this PR does -->
 
-## 🧪 Testing Done
-- [ ] Added new tests
-- [ ] All existing tests pass (`poetry run pytest`)
-- [ ] Manually tested in Discord
-- [ ] Tested with Docker
+## 🔧 Type of Change
+
+- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
+- [ ] ✨ New feature (non-breaking change which adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📚 Documentation update
+- [ ] 🧠 Self-learning improvement
+
+## 📋 Checklist
+
+- [ ] My code follows the project's code style (Black + Ruff)
+- [ ] I have added tests that prove my fix/feature works
+- [ ] I have updated the documentation accordingly
+- [ ] All tests pass locally with `poetry run pytest`
+- [ ] I have added my changes to CHANGELOG.md
+
+## 🧪 Testing
+
+<!-- Describe how you tested this -->
 
 ## 📸 Screenshots (if applicable)
-Add screenshots for UI/embed changes.
 
-## ✅ Checklist
-- [ ] Code follows project style (Black + Ruff)
-- [ ] Updated documentation (if needed)
-- [ ] Updated CHANGELOG.md
-- [ ] No sensitive data (tokens, keys) in commits
-- [ ] Commit messages are clear
+<!-- Add screenshots here -->
 
-## 🧠 Neurodivergent-Friendly?
-- [ ] This PR improves ADHD/dyslexia accessibility
-- [ ] This PR maintains existing accessibility features
-- [ ] Not applicable
+## 💰 BROski$ Earned
 
-## 🎉 BROski Points
-How many BROski$ should this PR earn? (just for fun)
-- [ ] 50 (small fix)
-- [ ] 100 (medium feature)
-- [ ] 200 (major feature)
-- [ ] 500 (legendary contribution)
+<!-- How many tokens should this contribution earn? -->
 
 ---
-**Thanks for contributing to BROski-Bot! 🐶♾️**
+
+**🐶♾️ Built with HYPERFOCUS! 🔥**

@@ -1,46 +1,33 @@
 ---
 name: Self-Learning Feedback
-about: Report bot behavior for training improvements
+about: Report feedback about bot behavior for training improvements
 title: '[LEARNING] '
 labels: self-learning, feedback
 assignees: ''
 ---
 
-## 🧠 Feedback Type
-- [ ] Bot response was incorrect
-- [ ] Bot response was unclear
-- [ ] Bot missed context
-- [ ] Bot was too slow
-- [ ] Bot was perfect! (positive feedback)
+## 🧠 Bot Response Issue
 
-## 💬 User Message
-What did you ask the bot?
-```
-/your command or message here
-```
+<!-- What did the bot say/do? -->
 
-## 🤖 Bot Response
-What did the bot say/do?
-```
-Bot's response here
-```
+## 🎯 What Should Have Happened
 
-## ✅ Expected Response
-What should it have said/done?
-```
-Ideal response here
-```
+<!-- Expected behavior -->
 
-## ⭐ Rating (1-5)
-How would you rate this interaction?
-- [ ] 1 star (terrible)
-- [ ] 2 stars (poor)
-- [ ] 3 stars (okay)
-- [ ] 4 stars (good)
-- [ ] 5 stars (excellent)
+## 📊 Context
 
-## 📝 Additional Notes
-Any other context to help the bot learn?
+- Command used: `/command`
+- User intent: 
+- Bot response:
+
+## ⭐ Rating
+
+<!-- Rate the response 1-5 stars -->
+
+## 💬 Suggestions
+
+<!-- How should the bot improve? -->
 
 ---
-**Thanks for helping BROski-Bot get smarter! You earned 10 BROski$ for this feedback. 💰**
+
+**This feedback helps BROski-Bot learn and improve! 🔥**

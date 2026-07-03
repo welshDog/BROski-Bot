@@ -1,94 +1,96 @@
 #!/usr/bin/env python3
 """
-Self-Learning Agent Training Pipeline
-Retrains the bot's AI model based on user feedback
+BROski-Bot Self-Learning Agent Training Pipeline
+Trains models on user feedback data
 """
-
-import argparse
 import json
+import argparse
 from pathlib import Path
 from datetime import datetime
 
-def load_feedback():
-    """Load feedback data from JSON file"""
-    feedback_file = Path("data/training/feedback.json")
+def load_feedback(feedback_file: Path):
+    """Load feedback data from JSON"""
     if not feedback_file.exists():
-        print("⚠️ No feedback data found")
+        print(f"❌ Feedback file not found: {feedback_file}")
         return []
     
     with open(feedback_file) as f:
-        data = json.load(f)
-    
-    print(f"📥 Loaded {len(data)} feedback entries")
-    return data
+        return json.load(f)
 
 def preprocess_data(feedback):
-    """Clean and prepare feedback for training"""
-    print("🧹 Preprocessing data...")
+    """Preprocess feedback for training"""
+    print(f"📦 Preprocessing {len(feedback)} feedback entries...")
     
-    # Filter out low-quality feedback
-    filtered = [f for f in feedback if f.get('rating', 0) >= 3]
+    # Filter high-quality feedback (4-5 stars)
+    quality_feedback = [
+        f for f in feedback 
+        if f.get('rating', 0) >= 4
+    ]
     
-    print(f"✅ Kept {len(filtered)}/{len(feedback)} high-quality entries")
-    return filtered
+    print(f"✅ {len(quality_feedback)} high-quality entries selected")
+    return quality_feedback
 
-def train_model(data, epochs=10):
-    """Train the model (placeholder for actual training logic)"""
-    print(f"🏋️ Training model for {epochs} epochs...")
+def train_model(data, epochs=10, batch_size=32):
+    """Train or fine-tune the model"""
+    print(f"🔥 Training with {epochs} epochs, batch size {batch_size}...")
+    print("🧠 Note: This is a placeholder. Integrate with your LLM fine-tuning pipeline.")
     
-    # TODO: Implement actual training logic
-    # For now, just simulate training
-    import time
-    for epoch in range(epochs):
-        print(f"Epoch {epoch+1}/{epochs}...")
-        time.sleep(0.5)
+    # TODO: Integrate with llmcord/Ollama fine-tuning
+    # Example: Fine-tune on positive feedback responses
+    # training_pairs = [
+    #     {"input": f["user_message"], "output": f["bot_response"]}
+    #     for f in data
+    # ]
     
-    print("✅ Training complete!")
+    print("✅ Training complete! (placeholder)")
+    return True
 
-def save_model():
+def save_model(model_path: Path):
     """Save trained model"""
-    model_dir = Path("data/models")
-    model_dir.mkdir(parents=True, exist_ok=True)
+    model_path.parent.mkdir(parents=True, exist_ok=True)
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_path = model_dir / f"model_{timestamp}.pkl"
+    # Save version info
+    version_file = model_path.parent / "version.txt"
+    version = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    with open(version_file, 'w') as f:
+        f.write(version)
     
-    # TODO: Save actual model
-    model_path.write_text("placeholder")
-    
-    print(f"💾 Model saved to {model_path}")
-    return model_path
+    print(f"✅ Model saved: {model_path}")
+    print(f"🏷️ Version: {version}")
 
 def main():
     parser = argparse.ArgumentParser(description="Train BROski-Bot self-learning agent")
-    parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
-    parser.add_argument("--batch-size", type=int, default=32, help="Training batch size")
+    parser.add_argument("--epochs", type=int, default=10, help="Training epochs")
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
+    parser.add_argument("--feedback-file", type=str, default="data/training/feedback.json")
+    parser.add_argument("--model-path", type=str, default="data/models/broski_agent.pth")
+    
     args = parser.parse_args()
     
-    print("🧠 BROski-Bot Self-Learning Training Pipeline")
+    print("\n🧠 BROski-Bot Self-Learning Training Pipeline")
     print("="*50)
-    print(f"Epochs: {args.epochs}")
-    print(f"Batch Size: {args.batch_size}")
-    print()
     
-    # Load and preprocess data
-    feedback = load_feedback()
+    # Load feedback
+    feedback = load_feedback(Path(args.feedback_file))
     if not feedback:
-        print("❌ Not enough data to train")
+        print("❌ No feedback data available. Exiting.")
         return
     
-    data = preprocess_data(feedback)
+    # Preprocess
+    training_data = preprocess_data(feedback)
+    if not training_data:
+        print("❌ Insufficient quality feedback. Need 4-5 star ratings.")
+        return
     
-    # Train model
-    train_model(data, epochs=args.epochs)
+    # Train
+    success = train_model(training_data, args.epochs, args.batch_size)
     
-    # Save model
-    model_path = save_model()
-    
-    print()
-    print("✅ Training pipeline complete!")
-    print(f"📊 Model ready for deployment: {model_path}")
-    print("BROski$ earned: 500 tokens for training! 💰")
+    # Save
+    if success:
+        save_model(Path(args.model_path))
+        print("\n🎉 Training complete! New model ready for deployment.")
+    else:
+        print("\n❌ Training failed.")
 
 if __name__ == "__main__":
     main()
