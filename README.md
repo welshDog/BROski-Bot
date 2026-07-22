@@ -1,118 +1,49 @@
-# 🐶♾️ BROski Bot v4.0 - Enterprise Edition
+# 🤖 BROski Bot v4.0
 
-**Neurodivergent-friendly Discord automation empire** built with Python, discord.py, and Enterprise Architecture.
+> 🟢 ACTIVE — Part of the [WelshDog Toolbox](https://github.com/welshDog/HyperFocus-Zone-Portal#-everyday-toolbox) | [HyperFocus Zone](https://github.com/welshDog/HyperFocus-Zone-Portal)
 
----
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2)](https://discordpy.readthedocs.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-economy_API-green)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
+[![Built in Wales](https://img.shields.io/badge/Built%20in-Wales%20🏴-red)](https://github.com/welshDog)
 
-## ✨ Features
-
-- 💰 **Token Economy** - BROski$ rewards, daily streaks, leaderboards
-- ⏱️ **Focus Sessions** - Pomodoro timer with hyperfocus bonuses (+200 tokens!)
-- 🎯 **Quest System** - Treasure hunts, challenges, achievements
-- 🤖 **AI Integration** - Natural language commands via llmcord
-- 🏆 **Leveling System** - XP, ranks, auto role assignment
-- 💎 **Memory Crystals** - Epic rewards (500+ tokens)
-- 🔗 **MintMe Integration** - Real blockchain BROski token airdrops
-- 🌐 **REST API** - Secure endpoints for economy and gamification (FastAPI)
+> *Your ADHD-first Discord companion. Ride or die. BROski♾️*
 
 ---
 
-## 🚀 Quick Start (Enterprise)
+## 🥔 Who this is for
 
-### 1. Clone & Setup
+**You, if any of these are true:**
+- You have a Discord server and your community needs structure + fun without it feeling corporate
+- You’re neurodivergent (ADHD/dyslexic/autistic) and need external dopamine hits to stay on task
+- You want a token economy that rewards real activity — focus sessions, daily check-ins, missions
+- You want hyperfocus tracking, leaderboards, and achievements that actually mean something
+
+BROski Bot is the community companion for Hyperfocus Zone — built specifically for ND brains.
+
+---
+
+## ⚡ One-Command Run
+
 ```bash
+# Clone and install
 git clone https://github.com/welshDog/BROski-Bot.git
 cd BROski-Bot
-# Install Poetry if not installed: pip install poetry
-poetry install
-```
+pip install poetry && poetry install
 
-### 2. Configuration
-```bash
+# Configure
 cp .env.example .env
-# Edit .env with your Discord bot token and database details:
-# DB_HOST=localhost
-# DB_PORT=5432
-# DB_NAME=broski
-# DB_USER=postgres
-# DB_PASSWORD=your_password
-```
+# Add: DISCORD_TOKEN, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 
-### 3. Database Migrations
-The project uses Alembic for database schema management.
-```bash
-# Apply migrations to head
+# Run database migrations
 poetry run alembic upgrade head
 
-# Rollback one revision
-poetry run alembic downgrade -1
-
-# Generate new migration (after model changes)
-poetry run alembic revision --autogenerate -m "description"
-```
-
-### 4. Run
-```bash
-# Run Bot
+# Launch the bot
 python -m src.main run
-
-# Run API Server (HyperCode Integration)
-python -m src.main api
 ```
 
----
-
-## 📁 Project Structure
-
-```
-src/
-├── api/            # FastAPI Routes (Economy, Health)
-├── agents/         # AI Agents (Classifier, Code Analyzer)
-├── cogs/           # Discord Extensions (Economy, Focus, etc.)
-├── config/         # Settings & Logging
-├── core/           # Core Logic (Database, Exceptions)
-├── integrations/   # External APIs (MintMe)
-├── models/         # Database Models
-├── repositories/   # Data Access Layer
-├── services/       # Business Logic Layer
-└── utils/          # Utilities
-```
-
----
-
-## 📋 Commands
-
-### 💰 Economy
-- `/balance [@user]` - Check token balance
-- `/daily` - Claim daily reward (streak bonus!)
-- `/give @user amount` - Gift tokens
-- `/leaderboard` - Top earners
-
-### ⏱️ Focus & Productivity
-- `/focus project` - Start hyperfocus session (+50 tokens)
-- `/focusend` - End session (+200 tokens base reward!)
-
-### 🎯 Quests
-- `/quests` - View active quests
-- `/achievements` - Your unlocked achievements
-
----
-
-## 🔌 API & Integration
-
-BROski Bot exposes a REST API for integration with **HyperCode V2.0**.
-
-- **Base URL:** `http://localhost:8000`
-- **Docs:** `/docs` (Swagger UI)
-- **Endpoints:**
-  - `GET /economy/balance/{user_id}`
-  - `POST /economy/redeem`
-  - `POST /economy/transfer`
-
----
-
-## 🐳 Docker Deployment
-
+**Docker (recommended for servers):**
 ```bash
 docker-compose up -d
 docker-compose logs -f broski-bot
@@ -120,41 +51,94 @@ docker-compose logs -f broski-bot
 
 ---
 
+## 🖥️ What you see when it works
+
+```
+[Discord] /focus deep-work
+→ BROski: 🔥 Hyperfocus session ACTIVATED! Focus on: deep-work
+           Timer started. Type /focusend when done. You got this BROski! ⚡
+
+[30 mins later...]
+/focusend
+→ BROski: 🏆 SESSION COMPLETE! +200 BROski$ + 50XP earned!
+           Streak: 3 days 🔥 | Level: BROski Agent (250/500 XP)
+
+/leaderboard
+→ 🏆 Top BROskis This Week:
+   1. WelshDog — 1,250 coins | Level 5 Commander
+   2. ...
+```
+
+---
+
+## 🎮 Commands
+
+### 💰 Economy
+| Command | What it does |
+|---|---|
+| `/balance [@user]` | Check BROski$ coin balance |
+| `/daily` | Claim daily reward (streak bonus!) |
+| `/give @user amount` | Gift coins to a BROski |
+| `/leaderboard` | Top earners this week |
+
+### ⏱️ Focus & Productivity
+| Command | What it does |
+|---|---|
+| `/focus [project]` | Start hyperfocus session (+50 coins on start) |
+| `/focusend` | End session (+200 coins base reward!) |
+
+### 🎯 Quests & Achievements
+| Command | What it does |
+|---|---|
+| `/quests` | View active quests |
+| `/achievements` | Your unlocked achievements |
+
+---
+
+## 💰 BROski$ Economy
+
+| Action | Coins | XP |
+|---|---|---|
+| Daily login | +5 | — |
+| Start focus session | +50 | — |
+| End focus session | +200 | +100 |
+| Complete a quest | varies | varies |
+| Unlock achievement | varies | varies |
+
+**Levels:** Recruit → Cadet → Agent → Operator → Commander → Architect → **Legend ♾️**
+
+---
+
+## 🔗 How it connects to Hyperfocus Zone
+
+| Connection | Detail |
+|---|---|
+| 💜 PostgreSQL | BROski$ economy runs on the same Postgres stack as HyperCode-V2.4 |
+| 🏢 FastAPI | REST API at `:8000` — economy endpoints usable by any HyperFocus agent |
+| 📊 Prometheus | Bot metrics exported for Grafana observability dashboard |
+| 🤖 HyperCode-V2.4 | BROski$ awards flow from the core `/economy/award-dev-xp` endpoint |
+| 💬 Community | The official BROski Discord server runs this bot | 
+| 🏠 Ecosystem | Part of the WelshDog Toolbox — [HyperFocus Zone Portal](https://github.com/welshDog/HyperFocus-Zone-Portal) |
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Runtime:** Python 3.11+
 - **Bot Framework:** discord.py 2.x
-- **API Framework:** FastAPI
-- **Database:** PostgreSQL (SQLAlchemy + AsyncPG)
-- **Dependency Management:** Poetry
+- **API:** FastAPI + SQLAlchemy + AsyncPG
+- **Database:** PostgreSQL (managed by Alembic)
 - **Monitoring:** Prometheus + Grafana
+- **Deps:** Poetry
 
 ---
 
-## 🧠 Built for Neurodivergent Developers
+<div align="center">
 
-This bot is specifically designed with ADHD and dyslexia in mind:
+**Part of the WelshDog Toolbox — Built with 🧠 + ❤️ in Llanelli, Wales 🏴󠁧󠁢󠁷󠁬󠁳󠁥**
 
-- ✅ Clear visual feedback with embeds
-- ✅ Quick wins and dopamine rewards
-- ✅ Streak systems for motivation
-- ✅ Hyperfocus session tracking
-- ✅ No walls of text - bite-sized info
+*by [@welshDog](https://github.com/welshDog) — Lyndz Williams*
 
----
+[🊪 Back to HyperFocus Zone Portal](https://github.com/welshDog/HyperFocus-Zone-Portal) · [💙 Sponsor](https://github.com/sponsors/welshDog) · [🛒 Shop](https://welshdog.shop)
 
-## 👨‍💻 Author
-
-**Lyndz Williams** (@welshDog)  
-Welsh Indie Developer | Llanelli, Wales 🏴  
-Building accessible AI tools for neurodivergent creators
-
----
-
-## 📝 License
-
-MIT License - Built with 🧠 and ♾️
-
----
-
-**HYPERFOCUS MODE ACTIVATED** 🔥🐶
+</div>
